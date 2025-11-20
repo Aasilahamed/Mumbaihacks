@@ -3,7 +3,7 @@ import { Page, NavItem, UserRole } from '../types';
 import { 
   LayoutDashboard, Stethoscope, Activity, HeartPulse, AlertCircle, 
   ShieldCheck, Building2, Users, Settings, Menu, Bell, 
-  Search, LogOut, ChevronRight, Map, FileText, Pill, CreditCard, Bed, User, Smartphone, Ruler
+  Search, LogOut, ChevronRight, Map, FileText, Pill, CreditCard, Bed, User, Smartphone, Ruler, Sun, Moon
 } from 'lucide-react';
 import { useUser } from '../contexts/UserContext';
 
@@ -40,6 +40,8 @@ interface LayoutProps {
   children: React.ReactNode;
   userRole: UserRole;
   onLogout: () => void;
+  theme?: 'light' | 'dark';
+  onToggleTheme?: () => void;
 }
 
 const Sidebar: React.FC<{ currentPage: Page; onNavigate: (page: Page) => void; isOpen: boolean; onClose: () => void; userRole: UserRole; onLogout: () => void }> = ({ currentPage, onNavigate, isOpen, onClose, userRole, onLogout }) => {
@@ -93,7 +95,7 @@ const Sidebar: React.FC<{ currentPage: Page; onNavigate: (page: Page) => void; i
   );
 };
 
-const Header: React.FC<{ onMenuClick: () => void; userRole: UserRole }> = ({ onMenuClick, userRole }) => {
+const Header: React.FC<{ onMenuClick: () => void; userRole: UserRole; theme?: 'light' | 'dark'; onToggleTheme?: () => void }> = ({ onMenuClick, userRole, theme, onToggleTheme }) => {
     const [notificationsOpen, setNotificationsOpen] = useState(false);
     const [profileOpen, setProfileOpen] = useState(false);
     const { user } = useUser();
@@ -115,7 +117,18 @@ const Header: React.FC<{ onMenuClick: () => void; userRole: UserRole }> = ({ onM
             </div>
 
             <div className="flex items-center gap-3 sm:gap-4">
-                 {/* Notifications */}
+                {/* Theme Toggle */}
+                {onToggleTheme && (
+                    <button 
+                        onClick={onToggleTheme}
+                        className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full text-slate-500 dark:text-slate-400 transition-colors"
+                        title={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
+                    >
+                        {theme === 'light' ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
+                    </button>
+                )}
+                
+                 {/* Notifications */
                  <div className="relative">
                     <button onClick={() => setNotificationsOpen(!notificationsOpen)} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full relative text-slate-500 dark:text-slate-400 transition-colors">
                         <Bell className="w-5 h-5" />
@@ -214,7 +227,7 @@ const Header: React.FC<{ onMenuClick: () => void; userRole: UserRole }> = ({ onM
     )
 }
 
-export const Layout: React.FC<LayoutProps> = ({ currentPage, onNavigate, children, userRole, onLogout }) => {
+export const Layout: React.FC<LayoutProps> = ({ currentPage, onNavigate, children, userRole, onLogout, theme, onToggleTheme }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
@@ -237,7 +250,7 @@ export const Layout: React.FC<LayoutProps> = ({ currentPage, onNavigate, childre
       )}
 
       <div className="flex-1 flex flex-col lg:ml-64 min-w-0 transition-all duration-300">
-        <Header onMenuClick={() => setSidebarOpen(true)} userRole={userRole} />
+        <Header onMenuClick={() => setSidebarOpen(true)} userRole={userRole} theme={theme} onToggleTheme={onToggleTheme} />
         <main className="flex-1 p-4 lg:p-8 overflow-x-hidden overflow-y-auto relative">
           <div className="max-w-7xl mx-auto w-full space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
             {children}

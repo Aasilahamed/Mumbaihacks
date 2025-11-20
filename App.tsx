@@ -17,7 +17,10 @@ import { UserProvider, useUser } from './contexts/UserContext';
 const AppContent: React.FC = () => {
   const { isAuthenticated, user, login, logout } = useUser();
   const [currentPage, setCurrentPage] = useState<Page>(Page.DASHBOARD);
-  const [theme, setTheme] = useState<'light' | 'dark'>('light');
+  const [theme, setTheme] = useState<'light' | 'dark'>(() => {
+    const saved = localStorage.getItem('theme');
+    return (saved as 'light' | 'dark') || 'light';
+  });
 
   useEffect(() => {
     if (theme === 'dark') {
@@ -25,6 +28,7 @@ const AppContent: React.FC = () => {
     } else {
       document.documentElement.classList.remove('dark');
     }
+    localStorage.setItem('theme', theme);
   }, [theme]);
 
   const toggleTheme = () => {
@@ -82,6 +86,8 @@ const AppContent: React.FC = () => {
             onNavigate={setCurrentPage} 
             userRole={user?.role || 'patient'}
             onLogout={logout}
+            theme={theme}
+            onToggleTheme={toggleTheme}
         >
         {renderPage()}
         </Layout>
